@@ -1,0 +1,77 @@
+/** Logging Module
+ * jsu.log.debug('log message');
+ * jsu.log.info('log message');
+ * jsu.log.warn('log message');
+ * jsu.log.error('log message');
+ * jsu.log.object('log message');
+ * jsu.log.getHistory(); // returns all logged data
+ * jsu.log.trace(); // logs stack trace
+ * */
+;(function(){
+	jsu.log = {
+		log:    function() {logappend('log',arguments);   return logger('log',  arguments);},
+		debug:  function() {logappend('debug',arguments); return logger('debug',arguments);},
+		info:   function() {logappend('info',arguments);  return logger('info', arguments);},
+		warn:   function() {logappend('warn',arguments);  return logger('warn', arguments);},
+		error:  function() {logappend('error',arguments); return logger('error',arguments);},
+		trace:  function() {if (window.console && window.console.trace){ window.console.trace();}},
+		object: function() {logger('log',arguments);},
+		getHistory: function(){ return _logData;},
+		l: logger,
+		levels: {error:1,warn:2,info:3,debug:4},
+		timerStart: timerStart,
+		timerStop:  timerStop
+	};
+
+	var logTimers = {};
+
+	function timerStart(id){
+		var now = new Date();
+		id = id || now.getTime().toString();
+		logTimers[id] = now;
+		return id;
+	}
+
+	function timerStop(id, msg){
+		var d2 = new Date();
+		var d1 = logTimers[id];
+		logTimers[id] = null;
+
+		var loadTime = (d2 - d1) / 1000;
+		jsu.log.debug(msg+": time = " + loadTime + ' (sec)');
+	}
+
+
+	var _logData = [];
+	function logdata(lvl, msg) {
+		_logData.push({lvl: lvl, msg: msg, time: new Date()});
+	}
+	function logger(method, args){
+		if (window.console){
+			try{
+				if(console[method]){
+					return console[method].apply(console, args);
+				}else{
+					return console.log.apply(console, args);
+				}
+			} catch(e){
+				return console.log(args[0]);
+			}
+		}
+		return function(){};
+	}
+
+	function logappend(method,a){
+		var s = a[0];
+		logdata(method, s);
+		// if you want to persist the log info, do it here
+	}
+
+	$(function() {
+		// log all uncaught javascript errors
+		window.onerror = function(errorMessage,url,line) {
+			jsu.log.error(errorMessage );
+		};
+	});
+
+}());
