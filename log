@@ -23,7 +23,6 @@
 		object: function() {logger('log',arguments);},
 		getHistory: function(){ return _logData;},
 		l: logger,
-		levels: {error:1,warn:2,info:3,debug:4},
 		timerStart: timerStart,
 		timerStop:  timerStop
 	};
