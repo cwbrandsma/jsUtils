@@ -12,7 +12,7 @@
  * jsu.log.getHistory(); // returns all logged data
  * jsu.log.trace(); // logs stack trace
  * */
-;(function(){
+(function(){
 	jsu.log = {
 		log:    function() {logappend('log',arguments);   return logger('log',  arguments);},
 		debug:  function() {logappend('debug',arguments); return logger('debug',arguments);},
